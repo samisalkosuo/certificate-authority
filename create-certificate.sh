@@ -143,12 +143,6 @@ openssl x509 -req \
 rm -f $__csr_cfg_file
 rm -f $__csr_file
 
-#print 
-if [[ "$PRINT_CERTS" == "true" ]]; then
-    cat $FILE_NAME.key
-    cat $FILE_NAME.crt
-fi
-
 echo "Creating self-signed certificate using CA...done." 
 
 echo "" 
