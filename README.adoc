@@ -1,0 +1,105 @@
+= Certificate Authority
+
+This is my CA.
+
+I am creating and using quite a lot of certificates in my day job and finally I got tired of always creating new certificate and trusting it and so on.
+
+== CA certificate
+
+In link:certificate/[certificate]-directory there is the link:certificate/ca.crt[CA certificate].
+
+Key is also included because I am not really a Certificate Authority and I don't mind if certificates created with my CA starts to appear anywhere in the globe.
+
+Add CA-certificate as trusted in RHEL-based Linux:
+
+* Copy certificate to `/etc/pki/ca-trust/source/anchors/` directory.
+* Then update ca-certificates:
+
+```
+update-ca-trust extract
+```
+
+* View certificate using:
+
+```
+openssl x509 -in ca.crt -text -noout
+```
+
+== Create certificates
+
+The script link:create-certificate.sh[create-certificate.sh] is used to create new certificates signed by my CA.
+
+```
+sh create-certificate.sh -c <CN> [san1 san2 san3 ...]
+```
+
+where:
+
+* CN - the common name. Used also as file name. Used also as the first Subject Alternative Name (SAN).
+* san1, san2, ... - Subject Alternative Name. Optional list of SANs.
+
+
+
+=== Examples
+
+Create certificate for server _web.myhome.local_.
+
+```
+sh create-certificate.sh -c "My Home" web.myhome.local
+```
+
+Certificate file _certificate.crt_ and key file _certificate.key_ are created.
+
+Decoded certificate looks similar to this:
+
+```
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 5 (0x5)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=Sami, C=FI, O=Salkosuo
+        Validity
+            Not Before: Feb 13 12:09:51 2023 GMT
+            Not After : Nov  9 12:09:51 2025 GMT
+        Subject: CN=My Home
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                . . . 
+        X509v3 extensions:
+            X509v3 Subject Alternative Name: 
+                DNS:web.myhome.local
+    . . .
+```
+
+
+Create certificate for image registry _registry.myoffice.net_ that is also called using _registry.dept1.net_ and _secure-images.dept1.dev_.
+
+```
+sh create-certificate.sh -f registry.myoffice.net -c "My Office" registry.myoffice.net registry.dept1.net secure-images.dept1.dev
+```
+
+Certificate file _registry.myoffice.net.crt_ and key file _registry.myoffice.net.key_ are created.
+Common Name is _My Office_.
+
+Decoded certificate looks similar to this:
+
+```
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 6 (0x6)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN = Sami, C = FI, O = Salkosuo
+        Validity
+            Not Before: Feb 13 12:15:43 2023 GMT
+            Not After : Nov  9 12:15:43 2025 GMT
+        Subject: CN = My Office
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                . . .
+        X509v3 extensions:
+            X509v3 Subject Alternative Name: 
+                DNS:registry.myoffice.net, DNS:registry.dept1.net, DNS:secure-images.dept1.dev
+    . . .
+```

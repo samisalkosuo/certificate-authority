@@ -1,2 +1,0 @@
-# certificate-authority
-My CA.
