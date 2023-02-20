@@ -35,8 +35,8 @@ sh create-certificate.sh -c <CN> [san1 san2 san3 ...]
 
 where:
 
-* CN - the common name. Used also as file name. Used also as the first Subject Alternative Name (SAN).
-* san1, san2, ... - Subject Alternative Name. Optional list of SANs.
+* CN - the common name.
+* san1, san2, ... - Subject Alternative Name. Required list of one or more SANs.
 
 
 
