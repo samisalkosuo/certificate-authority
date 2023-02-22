@@ -20,7 +20,7 @@ Help()
     echo " -f <filename> - Filename, without extension, for the certificate and key (default: $FILE_NAME)."
     echo " -p            - Print key and certificate files to system out."
     echo " -P            - Print base64 encoded key and certificate to system out."
-    echo " -v            - View the created certificate."
+    echo " -v            - View the certificate in the given file."
     echo ""
     echo "Note: SAN=Subject Alternative Name"
     exit 1
@@ -53,10 +53,34 @@ while getopts "hf:c:Ppv" option; do
         PRINT_BASE64_CERTS=true;;
       v)
         VIEW_CERT=true;;
-     \?) # Invalid option
+     \?)
         Error "Unknown option."
    esac
 done
+
+#view certificate and exit
+if [[ "$VIEW_CERT" == "true" ]]; then
+    openssl x509 -in $FILE_NAME.crt -text -noout
+    exit 0
+fi
+
+#print 
+if [[ "$PRINT_CERTS" == "true" ]]; then
+    cat $FILE_NAME.key
+    cat $FILE_NAME.crt
+    exit 0
+fi
+
+#print base64 certs
+if [[ "$PRINT_BASE64_CERTS" == "true" ]]; then
+    key=$(cat $FILE_NAME.key | base64 -w 0)
+    echo "base64 key: $key"
+    echo ""
+    cert=$(cat $FILE_NAME.crt | base64 -w 0)
+    echo "base64 certificate: $cert"    
+    exit 0
+fi
+
 #remove options so parameters can be used $1, $2 and so on
 shift $((OPTIND - 1))
 
@@ -145,26 +169,4 @@ rm -f $__csr_file
 
 echo "Creating self-signed certificate using CA...done." 
 
-echo "" 
-if [[ "$VIEW_CERT" == "true" ]]; then
-    openssl x509 -in $__cert_file -text -noout
-else
-    echo "View the certificate using command:" 
-    echo "  openssl x509 -in $__cert_file -text -noout" 
-fi
-echo "" 
 
-#print 
-if [[ "$PRINT_CERTS" == "true" ]]; then
-    cat $FILE_NAME.key
-    cat $FILE_NAME.crt
-fi
-
-#print base64 certs
-if [[ "$PRINT_BASE64_CERTS" == "true" ]]; then
-    key=$(cat $FILE_NAME.key | base64 -w 0)
-    echo "base64 key: $key"
-    echo ""
-    cert=$(cat $FILE_NAME.crt | base64 -w 0)
-    echo "base64 certificate: $cert"    
-fi

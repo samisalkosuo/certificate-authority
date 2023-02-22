@@ -5,7 +5,7 @@ RUN microdnf -y install openssl
 WORKDIR /ca
 
 COPY certificate/ ./certificate/
-COPY *.sh .
+COPY *.sh ./
 RUN chmod 755 *.sh && mv *.sh /usr/local/bin
 
 CMD ["/usr/local/bin/shell.sh"]
