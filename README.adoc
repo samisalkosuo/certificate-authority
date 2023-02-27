@@ -30,14 +30,30 @@ openssl x509 -in ca.crt -text -noout
 The script link:create-certificate.sh[create-certificate.sh] is used to create new certificates signed by my CA.
 
 ```
-sh create-certificate.sh -c <CN> [san1 san2 san3 ...]
+sh create-certificate.sh -c <CN> [-f filename] [san1 san2 san3 ...]
 ```
 
 where:
 
 * CN - the common name.
 * san1, san2, ... - Subject Alternative Name. Required list of one or more SANs.
+* filename - optional filename. Default filename is _certificate_. Note that existing files are overwritten without warning.
 
+== Docker
+
+Docker container is available.
+
+* Run:
+```
+docker run -it --rm kazhar/certificate-authority
+
+#with local volume, certificates are created in certs-directory
+docker run -it --rm -v ./certs:/ca/certs kazhar/certificate-authority
+```
+* Create certificates inside container:
+```
+create-certificate.sh -c "Subject Name" -f mycertfile san1 san2
+```
 
 
 === Examples
