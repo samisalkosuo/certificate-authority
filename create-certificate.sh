@@ -12,15 +12,16 @@ Help()
 {
     echo "Create certificates using CA."
     echo ""
-    echo "Usage: $0 -c <CN> [-f <filename>] [<options>] <SAN> [<SAN> ...]"
+    echo "Usage: $0 -c <CN> [-f <filename>] [<options>] <DNS SAN> [<DNS SAN> ...]"
     echo ""
     echo "Options:"
-    echo " -h            - This help."
-    echo " -c            - Certificate Common Name (CN)."
-    echo " -f <filename> - Filename, without extension, for the certificate and key (default: $FILE_NAME)."
-    echo " -p            - Print key and certificate files to system out."
-    echo " -P            - Print base64 encoded key and certificate to system out."
-    echo " -v            - View the certificate in the given file."
+    echo " -h                   - This help."
+    echo " -c                   - Certificate Common Name (CN)."
+    echo " -f <filename>        - Filename, without extension, for the certificate and key (default: $FILE_NAME)."
+    echo " -I \"IP1 [IP2 ...]\" - IP addresses to add as IP SAN."
+    echo " -p                   - Print key and certificate files to system out."
+    echo " -P                   - Print base64 encoded key and certificate to system out."
+    echo " -v                   - View the certificate in the given file."
     echo ""
     echo "Note: SAN=Subject Alternative Name"
     exit 1
@@ -39,7 +40,7 @@ fi
 
 
 # Get the options
-while getopts "hf:c:Ppv" option; do
+while getopts "I:hf:c:Ppv" option; do
    case $option in
       h) 
         Help;;
@@ -53,6 +54,8 @@ while getopts "hf:c:Ppv" option; do
         PRINT_BASE64_CERTS=true;;
       v)
         VIEW_CERT=true;;
+      I)
+        IP_SANS=$OPTARG;;
      \?)
         Error "Unknown option."
    esac
@@ -145,6 +148,17 @@ for ((i = 0; i < ${#__alt_names_array[@]}; ++i)); do
     echo "DNS.$position  = $name" >> ${__csr_cfg_file}
 done
 
+#add IP SANs
+__alt_names_array=($IP_SANS)
+position=0
+for ((i = 0; i < ${#__alt_names_array[@]}; i++)); do
+    # bash arrays are 0-indexed
+    position=$(( $position + 1 ))
+    name=${__alt_names_array[$i]}
+    echo "IP.$position  = $name" >> ${__csr_cfg_file}
+done
+
+
 #create certificate key:
 openssl genrsa -out ${__cert_key_file} 4096
 
@@ -164,8 +178,8 @@ openssl x509 -req \
         -sha256
 
 #delete temp files
-rm -f $__csr_cfg_file
-rm -f $__csr_file
+#rm -f $__csr_cfg_file
+#rm -f $__csr_file
 
 echo "Creating self-signed certificate using CA...done." 
 

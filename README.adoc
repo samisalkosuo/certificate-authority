@@ -39,6 +39,25 @@ where:
 * san1, san2, ... - Subject Alternative Name. Required list of one or more SANs.
 * filename - optional filename. Default filename is _certificate_. Note that existing files are overwritten without warning.
 
+Command help:
+
+```
+Create certificates using CA.
+
+Usage: /usr/local/bin/create-certificate.sh -c <CN> [-f <filename>] [<options>] <DNS SAN> [<DNS SAN> ...]
+
+Options:
+ -h                   - This help.
+ -c                   - Certificate Common Name (CN).
+ -f <filename>        - Filename, without extension, for the certificate and key (default: certificate).
+ -I "IP1 [IP2 ...]" - IP addresses to add as IP SAN.
+ -p                   - Print key and certificate files to system out.
+ -P                   - Print base64 encoded key and certificate to system out.
+ -v                   - View the certificate in the given file.
+
+Note: SAN=Subject Alternative Name
+```
+
 == Docker
 
 Docker container is available.
