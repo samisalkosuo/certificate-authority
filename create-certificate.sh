@@ -8,8 +8,11 @@ PRINT_CERTS=false
 PRINT_BASE64_CERTS=false
 VIEW_CERT=false
 VALIDITY_DAYS=1000
-TMP_CA_CRT_FILE=/tmp/tmp_CA.crt
-TMP_CA_KEY_FILE=/tmp/tmp_CA.key
+TMP_CA_FILENAME=tmp_CA
+TMP_CA_CRT_FILE=${TMP_CA_FILENAME}.crt
+TMP_CA_KEY_FILE=${TMP_CA_FILENAME}.key
+TMP_CA_SRL_FILE=${TMP_CA_FILENAME}.srl
+
 COMMAND=create
 
 function Help()
@@ -140,6 +143,7 @@ function RemoveCAFiles
 {
   rm -f $TMP_CA_CRT_FILE
   rm -f $TMP_CA_KEY_FILE
+  rm -f $TMP_CA_SRL_FILE
 }
 
 
